@@ -20,15 +20,19 @@ def face_detected(image):
 
 def detected_person():
 
-	filters = ['eye.xml', 'full_frontal.xml', 'profile.xml', 'profile_flipped.xml', 'eye_rotated.xml', 'eye_rotated2.xml', 'eye_rotated3.xml', 'eye_rotated4.xml']]
+	filters = ['eye.xml', 'full_frontal.xml', 'profile.xml', 'profile_flipped.xml', 'eye_rotated.xml', 'eye_rotated2.xml', 'eye_rotated3.xml', 'eye_rotated4.xml']
 	for file in filters:
 		
-		if file == "profile_flipped.xml":
+		if file == 'profile_flipped.xml':
 			camera.hflip = True
 		if file == 'eye_rotated.xml':
 			camera.rotation = 90
 		if file == 'eye_rotated2.xml':
 			camera.rotation = 270
+		if file == 'eye_rotated3.xml':
+			camera.rotation = 45
+		if file == 'eye_rotated4.xml':
+			camera.rotation = 315
 		
 
 		camera.capture('image.jpg')
@@ -47,12 +51,8 @@ def detected_person():
 			roi_gray = gray[y:y+h, x:x+w]
 			roi_color = open_cv_image[y:y+h, x:x+w]
 			person = face_detected(r)
-			print person
+			if person == True:
+				return person
 		camera.rotation = 0
 		camera.hflip = False
-	print "Finished loop"
-	#return person
-	
-detected_person()
-	
-
+	return False

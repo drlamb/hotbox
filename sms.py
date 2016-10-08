@@ -1,18 +1,17 @@
 # sms.py - Handles the Twilio messaging capabilities.
 
 import logging
-import configparser
-import gps
+import ConfigParser
+import mygps
 from twilio.rest import TwilioRestClient
 from twilio import TwilioRestException
 
-config = configparser.ConfigParser()
+config = ConfigParser.ConfigParser()
 config.read('config')
-config = config['twilio']
+#config = config.items('twilio')
 
-client = TwilioRestClient(config['account_sid'], config['auth_token'])
+client = TwilioRestClient(config.get('twilio', 'account_sid'), config.get('twilio', 'auth_token'))
 
-print(config['auth_token'])
 
 def send_text(message, temperature, delta, minutes_elapsed,
               number="+15163064504"):
@@ -22,8 +21,8 @@ def send_text(message, temperature, delta, minutes_elapsed,
 
     TODO: multi phone number support, error checking, set origin number
     """
-    message += " The inside of the car is currently %d° hot, with " \
-               "a %d° change in %d minutes." % (temperature,
+    message += " The inside of the car is currently %d degrees hot, with " \
+               "a %d degree change in %d minutes." % (temperature,
                                                 delta, minutes_elapsed)
     try:
         sms = client.messages.create(body=message,
@@ -39,5 +38,9 @@ def contact_911():
     car, or if it becomes far too hot too quickly, get the nearest 
     authorities.
     """
-    pass
+    (lat, lon) = mygps.get_coords()
+    print lat
+    print lon
+    #pass
     
+contact_911()
