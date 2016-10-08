@@ -2,14 +2,15 @@ from sense_hat import SenseHat
 sense = SenseHat()
 import time
 
-# Conversts the given temperature to farhaneit 
+# Converts the given temperature to F
 def convert_temp_to_f(temperature):
-	return (temperature*(5/9)+32))
+	return ((temperature*(9/5))+32)
 
 # Returns the temperature, converted to F
 def get_temp():
-	return convert_temp_to_f(sense.get_temp())
+	return convert_temp_to_f(sense.get_temperature())
 
+# Returns the humidity given as a number between 0 and 100
 def get_humidity():
 	return sense.get_humidity()
 
@@ -38,5 +39,8 @@ def calc_heat_index(temperature, humidity):
         return t
     else:
         return hi
+
+print(get_temp())
+print(calc_heat_index(get_temp(),get_humidity()))
 
 
