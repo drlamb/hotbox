@@ -4,6 +4,7 @@ from picamera import PiCamera
 import cv2
 import time
 
+
 camera = PiCamera()
 camera.resolution = (1296,736)
 camera.framerate=30
