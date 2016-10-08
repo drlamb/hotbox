@@ -40,7 +40,6 @@ def calc_heat_index(temperature, humidity):
     else:
         return hi
 
-print(get_temp())
-print(calc_heat_index(get_temp(),get_humidity()))
+
 
 

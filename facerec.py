@@ -42,7 +42,7 @@ def detected_person():
 		person = False
 		# Define the Facial Recognition
 		gray = cv2.cvtColor(open_cv_image, cv2.COLOR_BGR2GRAY)
-		print file
+		#print file
 		face_cascade = cv2.CascadeClassifier(file)
 		faces = face_cascade.detectMultiScale(gray,1.3,5)
 	

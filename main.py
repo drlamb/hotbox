@@ -5,18 +5,62 @@ from sense_hat import SenseHat
 import sms
 import facerec
 
-MIN_BACKOFF = timedelta(minutes=1)
+MIN_BACKOFF = timedelta(seconds=5)
 MAX_BACKOFF = timedelta(minutes=10)
 
 TEMP_THRESHOLD = 60 # Fahrenheit
 HOT_THRESHOLD = 75 # or 80
+
+# Creates the pretty pictures to display on the Sense-Hat
+X = (0, 255, 0)
+Y = (255, 0, 0)
+Z = (255, 255, 0)
+O = (0, 0, 0)
+
+smiley = [
+X, X, X, X, X, X, X, X,
+X, O, O, O, O, O, O, X,
+X, O, X, O, O, X, O, X,
+X, O, O, O, O, O, O, X,
+X, O, X, O, O, X, O, X,
+X, O, O, X, X, O, O, X,
+X, O, O, O, O, O, O, X,
+X, X, X, X, X, X, X, X]
+
+meh = [
+Z, Z, Z, Z, Z, Z, Z, Z,
+Z, O, O, O, O, O, O, Z,
+Z, O, Z, O, O, Z, O, Z,
+Z, O, O, O, O, O, O, Z,
+Z, O, O, O, O, O, O, Z,
+Z, O, Z, Z, Z, Z, O, Z,
+Z, O, O, O, O, O, O, Z,
+Z, Z, Z, Z, Z, Z, Z, Z]
+
+frown = [
+Y, Y, Y, Y, Y, Y, Y, Y,
+Y, O, O, O, O, O, O, Y,
+Y, O, Y, O, O, Y, O, Y,
+Y, O, O, O, O, O, O, Y,
+Y, O, O, Y, Y, O, O, Y,
+Y, O, Y, O, O, Y, O, Y,
+Y, O, O, O, O, O, O, Y,
+Y, Y, Y, Y, Y, Y, Y, Y]
+
+def set_lights(sensehat, temperature):
+    if temperature > 75:
+        sensehat.set_pixels(frown)
+    elif temperature >= 60:
+        sensehat.set_pixels(meh)
+    else:
+        sensehat.set_pixels(smiley)
 
 def main():
     """
     Main loop that runs to check on the car's temperature, speed, and location
     (if authorities are needed).
     """
-    backoff = timedelta(minutes=1)
+    backoff = timedelta(seconds=5)
     
     start_time = None
     start_temp = 0
@@ -29,30 +73,35 @@ def main():
 
         # Before checking temperature, check that car is moving.
         speed = sensehat.get_accelerometer_raw()
-        if speed[0] > 1 or speed[1] > 1 or speed[2] > 1:
+        if speed['x'] > 1 or speed['y'] > 1 or speed['z'] > 1:
             print("Car still moving, increasing backoff")
+            sensehat.clear()
             start_temp = 0
             start_time = None
-            backoff.minutes = backoff.minutes + 2 if backoff.minutes <= 8 else MAX_BACKOFF
+            n_sec = backoff.total_seconds() + 120 if backoff.total_seconds() <= 60 * 8 else 10 * 60
+            backoff = timedelta(seconds=n_sec)
             continue
 
         # If car is still, detect if there's a face in there.
         if not facerec.detected_person():
             print("No face detected, increasing backoff")
+            sensehat.clear()
             start_temp = 0
             start_time = None
-            backoff.minutes = backoff.minutes + 2 if backoff.minutes <= 0 else MAX_BACKOFF
+            n_sec = backoff.total_seconds() + 120 if backoff.total_seconds() <= 60 * 8 else 10 * 60
+            backoff = timedelta(seconds=n_sec)
             continue
             
         # Check the temperature
-        current_temp = 60 #temperature.get_temp()
-        
+        current_temp = temperature.get_temp()
+        set_lights(sensehat, current_temp)
         if current_temp < TEMP_THRESHOLD:
             # Resets timer and start temp, and increases backoff
             print("Too cold, delaying backoff")
             start_temp = 0
             start_time = None
-            backoff.minutes = backoff.minutes + 2 if backoff.minutes <= 8 else MAX_BACKOFF
+            n_sec = backoff.total_seconds() + 120 if backoff.total_seconds() <= 60 * 8 else 10 * 60
+            backoff = timedelta(seconds=n_sec)
             continue
     
         elif current_temp >= TEMP_THRESHOLD:
@@ -60,11 +109,13 @@ def main():
             print("Getting warmer...")
             if start_temp == 0:
                 # Sets the new start temperature and time.
-                backoff = backoff.minutes - 2 if backoff.minutes >= 2 else MIN_BACKOFF
+                n_sec = backoff.total_seconds() - 120 if backoff.total_seconds() > 60 * 3 else 60 * 1
+                backoff = timedelta(seconds=n_sec)
                 start_time = datetime.today()
                 start_temp = current_temp
-            delta = timedelta(datetime.today() - start_time).total_seconds() / 60
-            sms.send_text("Check on your car!",
+            delta = (datetime.today() - start_time).total_seconds() / 60
+            sms.send_text("Please Check on your car's passenger(s)!",
+                          current_temp,
                           current_temp - start_temp,
                           delta)
 
