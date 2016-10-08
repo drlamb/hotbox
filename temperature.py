@@ -30,7 +30,7 @@ def calc_heat_index(temperature, humidity):
     c8 = 8.5282*10**(-4)
     c9 = -1.99*10**(-6)
 
-    #calculation for heat index
+    # calculation for heat index
     # https://en.wikipedia.org/wiki/Heat_index
     hi = c1 + (c2*t) + (c3*h) + (c4*t*h) + (c5*(t**2)) + (c6*(h**2)) + (c7*(t**2)*h) + (c8*t*(h**2)) + (c9*(t**2)*(h**2))
 
