@@ -5,13 +5,13 @@ from sense_hat import SenseHat
 import sms
 import facerec
 
-MIN_BACKOFF = timedelta(seconds=5)
-MAX_BACKOFF = timedelta(minutes=10)
+MIN_BACKOFF = timedelta(seconds=5) #Sets the minimum temperature refesh time
+MAX_BACKOFF = timedelta(minutes=10) #Sets the maximum time before the system will check for a temperature change
 
 TEMP_THRESHOLD = 60 # Fahrenheit
 HOT_THRESHOLD = 75 # or 80
 
-# Creates the pretty pictures to display on the Sense-Hat
+# Creates the pretty pictures to display on the Sense-Hat LED Array
 X = (0, 255, 0)
 Y = (255, 0, 0)
 Z = (255, 255, 0)
@@ -47,6 +47,7 @@ Y, O, Y, O, O, Y, O, Y,
 Y, O, O, O, O, O, O, Y,
 Y, Y, Y, Y, Y, Y, Y, Y]
 
+# A function to call to set the light to the above images depending on the temperature
 def set_lights(sensehat, temperature):
     if temperature > 75:
         sensehat.set_pixels(frown)
@@ -55,6 +56,7 @@ def set_lights(sensehat, temperature):
     else:
         sensehat.set_pixels(smiley)
 
+# The main function of Hotbox
 def main():
     """
     Main loop that runs to check on the car's temperature, speed, and location

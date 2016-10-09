@@ -1,6 +1,5 @@
 [twilio]
-account_sid = AC0537adaeed3e9cf15b74d086e038363a
-auth_token = f43132955ea36ff0a1bdd9236a302a08
-from_number = 15169864232
+account_sid = 
+auth_token = 
+from_number = 
 
-#remove

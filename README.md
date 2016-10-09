@@ -1,7 +1,7 @@
 ![Alt text](/hotbox_logo.png?raw=true "Logo")
 
 # Hotbox
-A program that utilizes a variety of technologies and a Raspberry Pi to detect the presence of a human in a overheating parked car and alert the car owner to the potential dangers of prolonged heat exposure. 
+A program that utilizes a variety of technologies and a Raspberry Pi to detect the presence of a human in an overheating parked car and alert the car owner to the potential dangers of prolonged heat exposure. 
 
 ## Purpose
 So far in 2016, 37 children in the United States alone have died due to being left alone in a hot car. Unfortunately, this number has averaged around 40 deaths per year since 1998 with 54% of deaths attributed to the child being forgotten. Hotbox was created during MHacks 8 in Detroit, Michigan as a proof of concept to show that a solution to this problem could be both inexpensive (the entire setup costs less than $100) and effective in preventing another innocent child from dying.
