@@ -6,9 +6,9 @@ import time
 from PIL import Image
 #from bob.ip.base.Flandmark import Flandmark
 
-
+# Initializes the Camera
 camera = PiCamera()
-camera.resolution = (1296,736)
+camera.resolution = (1296,736) # Reduces the resolution to increase performance
 rawCapture = PiRGBArray(camera, size=(1296,736))
 
 # Need to allow the camera to initilize 
@@ -23,6 +23,7 @@ def detected_person():
 	filters = ['eye.xml', 'full_frontal.xml', 'profile.xml', 'profile_flipped.xml', 'eye_rotated.xml', 'eye_rotated2.xml', 'eye_rotated3.xml', 'eye_rotated4.xml']
 	for file in filters:
 		
+		# Rotates the camera to account for a variety of postures.
 		if file == 'profile_flipped.xml':
 			camera.hflip = True
 		if file == 'eye_rotated.xml':
@@ -34,7 +35,6 @@ def detected_person():
 		if file == 'eye_rotated4.xml':
 			camera.rotation = 315
 		
-
 		camera.capture('image.jpg')
 		pil_image = Image.open('image.jpg').convert('RGB')
 		open_cv_image = np.array(pil_image)

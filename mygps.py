@@ -2,6 +2,7 @@ import os
 from gps3 import gps3
 from time import *
 
+# Queries the local GPS device to get the coordinates
 def get_coords():
     gps_socket = gps3.GPSDSocket()
     data_stream = gps3.DataStream()
