@@ -8,18 +8,15 @@ from twilio import TwilioRestException
 
 config = ConfigParser.ConfigParser()
 config.read('config')
-#config = config.items('twilio')
 
 client = TwilioRestClient(config.get('twilio', 'account_sid'), config.get('twilio', 'auth_token'))
 
-
+# The function that uses twilio to send the car's owner a SMS
 def send_text(message, temperature, delta, minutes_elapsed,
               number="+17348463494"):
     """
     Sends a text message to the specified number with temperature,
     minutes elapsed.
-
-    TODO: multi phone number support, error checking, set origin number
     """
     message += " The inside of the car is currently %d degrees, with " \
                "a %d degree change in %d minutes." % (temperature,
@@ -36,7 +33,8 @@ def contact_911():
     """
     If too much time has elapsed without any detected change in the
     car, or if it becomes far too hot too quickly, get the nearest 
-    authorities.
+    authorities. This section left unfilled due to variences in support between
+    police departments.
     """
     (lat, lon) = mygps.get_coords()
     print lat
