@@ -51,6 +51,7 @@ def detected_person():
 			roi_gray = gray[y:y+h, x:x+w]
 			roi_color = open_cv_image[y:y+h, x:x+w]
 			person = face_detected(r)
+                        cv2.imwrite('result.jpg', r)
 			if person == True:
 				return person
 		camera.rotation = 0

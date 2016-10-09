@@ -12,6 +12,7 @@ TEMP_THRESHOLD = 60 # Fahrenheit
 HOT_THRESHOLD = 75 # or 80
 DANGER_THRESHOLD = 90
 
+
 # Creates the pretty pictures to display on the Sense-Hat LED Array
 X = (0, 255, 0)
 Y = (255, 0, 0)
@@ -50,9 +51,10 @@ Y, Y, Y, Y, Y, Y, Y, Y]
 
 # A function to call to set the light to the above images depending on the temperature
 def set_lights(sensehat, temperature):
+    sensehat.rotation = 180
     if temperature > HOT_THRESHOLD:
         sensehat.set_pixels(frown)
-    elif temperature >= TEMP_THRESHOLD:
+    elif temperature > TEMP_THRESHOLD:
         sensehat.set_pixels(meh)
     else:
         sensehat.set_pixels(smiley)
@@ -69,23 +71,27 @@ def main():
     start_temp = 0
 
     sensehat = SenseHat()
+    sensehat.clear() #Just in case
+
 
     while True:
         # Wait until checking again
-        sleep(backoff.total_seconds())
+        sleep(int(backoff.total_seconds()))
 
         clear_data = False
-        current_speed = sensehat.get_accelerometer_raw()
+        speed = sensehat.get_accelerometer_raw()
         current_temp = temperature.get_temp()
 
         # Before checking temperature, check that car is moving.
         if abs(speed['x']) > 1 or abs(speed['y']) > 1 or abs(speed['z']) > 1:
             print("Car still moving, increasing backoff")
+            sensehat.clear()
             clear_data = True
 
         # If car is still, detect if there's a face in there.
         elif not facerec.detected_person():
             print("No face detected, increasing backoff")
+            sensehat.clear()
             clear_data = True
             
         # Check the temperature
@@ -103,7 +109,7 @@ def main():
             
             n_sec = max(backoff.total_seconds() - 120,
                         MIN_BACKOFF.total_seconds())
-            backoff = timedelta(n_sec)
+            backoff = timedelta(int(n_sec))
             
             if start_temp == 0:
                 # Sets the new start temperature and time.
@@ -113,7 +119,7 @@ def main():
 
             if current_temp >= DANGER_THRESHOLD:
                 message = "Check your car's passenger NOW."
-                backoff = timedelta(MIN_BACKOFF.total_seconds())
+                backoff = timedelta(seconds=int(MIN_BACKOFF.total_seconds()))
                 temp_delta = current_temp - start_temp
                 time_delta = (datetime.today() - start_time).total_seconds() / 60
                 slope = temp_delta / time_delta
@@ -126,7 +132,7 @@ def main():
             elif current_temp >= HOT_THRESHOLD:
                 # Edging into the danger zone! Minimum backoff possible
                 message = "Please check on your car's passenger(s) soon!"
-                backoff = timedelta(seconds=MIN_BACKOFF.total_seconds())
+                backoff = timedelta(seconds=int(MIN_BACKOFF.total_seconds()))
 
             timediff = (datetime.today() - start_time).total_seconds() / 60
             sms.send_text(message,
@@ -136,11 +142,10 @@ def main():
             
         if clear_data:
             # Clear previously kept data
-            sensehat.clear()
             start_temp = 0
             start_time = None
-            n_sec = min(backoff.total_seconds() - 120, MAX_BACKOFF)
-            backoff = timedelta(seconds=n_sec)
+            n_sec = min(backoff.total_seconds() + 120, MAX_BACKOFF.total_seconds())
+            backoff = timedelta(seconds=int(n_sec))
 
 if __name__ == "__main__":
     main()
